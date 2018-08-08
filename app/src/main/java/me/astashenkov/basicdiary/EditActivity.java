@@ -59,6 +59,8 @@ public class EditActivity extends AppCompatActivity {
                 entryEdit.setVisibility(View.GONE);
                 titleView.setVisibility(View.VISIBLE);
                 entryView.setVisibility(View.VISIBLE);
+                titleView.setText(titleEdit.getText());
+                entryView.setText(entryEdit.getText());
                 findViewById(R.id.fab_save).setVisibility(View.GONE);
                 findViewById(R.id.fab_edit).setVisibility(View.VISIBLE);
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
