@@ -4,34 +4,47 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Diary implements Serializable {
+    public static final String DIARY = "Diary";
+    public static final String ID = "_id";
+    public static final String TITLE = "Title";
+    public static final String DESCRIPTION = "Description";
+    public static final String CREATED = "Created";
+    public static final String MODIFIED = "Modified";
+    public static final String CREATE_DIARY = "create table " + DIARY +
+            " (" + ID + " integer primary key autoincrement, " + TITLE +
+            " text null, " + DESCRIPTION + " text null, " + CREATED +
+            " datetime default CURRENT_TIMESTAMP, " + MODIFIED +
+            " datetime default CURRENT_TIMESTAMP); ";
 
-    private int diaryId;
-    private Date dateCreated;
+    private int id;
+    private String dateCreated;
     private String title;
     private String description;
-    private Date dateModified;
+    private String dateModified;
 
-    public Diary(int diaryId, Date dateCreated, String title, String description, Date dateModified) {
-        this.diaryId = diaryId;
+    public Diary() {};
+
+    public Diary(int id, String title, String description, String dateCreated, String dateModified) {
+        this.id = id;
         this.dateCreated = dateCreated;
         this.title = title;
         this.description = description;
         this.dateModified = dateModified;
     }
 
-    public int getDiaryId() {
-        return diaryId;
+    public int getId() {
+        return id;
     }
 
-    public void setDiaryId(int diaryId) {
-        this.diaryId = diaryId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Date getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -51,11 +64,11 @@ public class Diary implements Serializable {
         this.description = description;
     }
 
-    public Date getDateModified() {
+    public String getDateModified() {
         return dateModified;
     }
 
-    public void setDateModified(Date dateModified) {
+    public void setDateModified(String dateModified) {
         this.dateModified = dateModified;
     }
 }

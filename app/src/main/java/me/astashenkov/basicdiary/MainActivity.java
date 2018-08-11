@@ -1,33 +1,53 @@
 package me.astashenkov.basicdiary;
 
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ArrayList<Diary> diaryList = new ArrayList<>();
+    private DiaryAdapter adapter;
+    private DatabaseHelper db;
+
+    Diary[] diaryPlaceholders = new Diary[]{
+            new Diary(1, "Example entry 1", "Lorum ipsum", null, null),
+            new Diary(2, "Example entry 2", "Lorum ipsum", null, null),
+            new Diary(3, "Example entry 3", "Lorum ipsum", null, null)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //region Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //endregion
 
+        //region FAB
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,16 +56,20 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+        //endregion
 
-        //Add list to default layout; placeholder values for now
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        ArrayList<Diary> diaryList = new ArrayList<>();
-        diaryList.add(new Diary(1, new Date(), "First entry", "Lorem ipsum", new Date()));
-        diaryList.add(new Diary(2, new Date(), "Second entry", "Lorem ipsum", new Date()));
+        //region List from Cursor
+        db = new DatabaseHelper(this);
+        //db.open();
+        int diary_rows = db.getDiariesCount();
+        if (diary_rows == 0) {
+            db.setupDiary(diaryPlaceholders);
+        }
 
-        DiaryAdapter diaryAdapter = new DiaryAdapter(this, diaryList);
+        diaryList.addAll(db.getAllDiaries());
+        adapter = new DiaryAdapter(this, diaryList);
         ListView listView = (ListView) findViewById(R.id.diary_list);
-        listView.setAdapter(diaryAdapter);
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -53,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, EditActivity.class);
                 intent.putExtra("diary", diary);
                 startActivity(intent);
-                //Snackbar.make(view, "You've selected: " + diary.getTitle(), Snackbar.LENGTH_LONG).show();
             }
         });
+        //endregion
     }
 
     @Override
@@ -79,4 +103,51 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void finish() {
+        super.finish();
+        db.close();
+    }
+
+/*
+    class GeneralAdapter extends CursorAdapter {
+
+        GeneralAdapter(Cursor c) {
+            super(MainActivity.this, c);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            ViewHolder holder = (ViewHolder) view.getTag();
+            holder.populateFrom(cursor, db);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            LayoutInflater inflater = getLayoutInflater();
+            View row = inflater.inflate(R.layout.list_item, parent, false);
+            ViewHolder holder = new ViewHolder(row);
+            row.setTag(holder);
+
+            return (row);
+        }
+    }
+
+    static class ViewHolder {
+        private TextView title = null;
+        private TextView description = null;
+
+        ViewHolder(View row) {
+            title = (TextView) row.findViewById(R.id.textView_title);
+            description = (TextView) row.findViewById(R.id.textView_date);
+        }
+
+        public void populateFrom(Cursor c, DatabaseAdapter database) {
+            title.setText(c.getString(1));
+            description.setText(c.getString(2));
+        }
+    }
+*/
+
 }

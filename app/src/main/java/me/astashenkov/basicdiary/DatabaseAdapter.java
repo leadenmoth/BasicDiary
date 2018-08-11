@@ -44,43 +44,26 @@ public class DatabaseAdapter {
         }
     }
 
-    public long insertDiary(String title, String description) {
+    public long insertDiary(Diary diary) {
 
-        ContentValues diary = new ContentValues();
-        diary.put(TITLE, title);
-        diary.put(DESCRIPTION, description);
+        ContentValues values = new ContentValues();
+        values.put(TITLE, diary.getTitle());
+        values.put(DESCRIPTION, diary.getDescription());
         //diary.put(CREATED, new Timestamp(System.currentTimeMillis()));
 
-        return db.insert(DIARY, null, diary);
+        return db.insert(DIARY, null, values);
     }
 
-    public void updateDiary(long id, String title, String description) {
 
-        ContentValues diary = new ContentValues();
-        diary.put(TITLE, title);
-        diary.put(DESCRIPTION, description);
-        //diary.put(MODIFIED, new Timestamp(System.currentTimeMillis()));
-        db.update(DIARY, diary, "_id=" + id, null);
-    }
-
-    public void deleteDiary(long id) {
-
-        db.delete(DIARY, "_id=" + id, null);
-    }
 
     public void emptyDiary(String table) {
         db.delete(table, null, null);
     }
 
-    public void setupDiary(String[] title, String[] description) {
-        for (int i = 0; i < title.length; i++) {
-            insertDiary(title[i], description[i]);
+    public void setupDiary(Diary[] diary) {
+        for (int i = 0; i < diary.length; i++) {
+            insertDiary(diary[i]);
         }
-    }
-
-    public int countRows(String table) {
-        Cursor cursor = db.query(table, null, null, null, null, null, null);
-        return cursor.getCount();
     }
 
     public int getId(String table, String signature) {
@@ -103,7 +86,7 @@ public class DatabaseAdapter {
         return id;
     }
 
-    public Cursor generalWhereStatemet(String table, String column, int value) {
+    public Cursor generalWhereStatement(String table, String column, int value) {
 
         Cursor cursor = db.query(table, null, column + "=?", new String[]{Integer.toString(value)}, null, null, null);
         return cursor;
@@ -129,12 +112,7 @@ public class DatabaseAdapter {
         return rows;
     }
 
-    public Cursor getSingleRecordFromTable(String table, String id, int p) {
-        Cursor cursor = db.query(table, null, null, null, null, null, null);
-        cursor.moveToPosition(p);
 
-        return cursor;
-    }
 
 
     static class BaseDBOpenHelper extends SQLiteOpenHelper {

@@ -15,8 +15,13 @@ public class EditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
+        //region Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        //Enable back arrow
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //endregion
 
         final TextView titleView = (TextView) findViewById(R.id.title_view);
         final TextView entryView = (TextView) findViewById(R.id.entry_view);
@@ -25,16 +30,18 @@ public class EditActivity extends AppCompatActivity {
 
 
         Bundle extras = getIntent().getExtras();
+        final Diary diary;
         if(extras != null){
-            Diary diary = (Diary) extras.getSerializable("diary");
-            titleView.setText(diary.getTitle());
-            entryView.setText(diary.getDescription());
-            titleEdit.setText(diary.getTitle());
-            entryEdit.setText(diary.getDescription());
+            diary = (Diary) extras.getSerializable("diary");
+
         }else{
-            titleView.setText("");
-            entryView.setText("");
+            diary = new Diary(0, null, "", "", null);
         }
+
+        titleView.setText(diary.getTitle());
+        entryView.setText(diary.getDescription());
+        titleEdit.setText(diary.getTitle());
+        entryEdit.setText(diary.getDescription());
 
         FloatingActionButton fabEdit = (FloatingActionButton) findViewById(R.id.fab_edit);
         fabEdit.setOnClickListener(new View.OnClickListener() {
@@ -55,19 +62,31 @@ public class EditActivity extends AppCompatActivity {
         fabSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                diary.setTitle(titleEdit.getText().toString());
+                diary.setDescription(entryEdit.getText().toString());
+                titleView.setText(diary.getTitle());
+                entryView.setText(diary.getDescription());
+
                 titleEdit.setVisibility(View.GONE);
                 entryEdit.setVisibility(View.GONE);
+                findViewById(R.id.fab_save).setVisibility(View.GONE);
+
                 titleView.setVisibility(View.VISIBLE);
                 entryView.setVisibility(View.VISIBLE);
-                titleView.setText(titleEdit.getText());
-                entryView.setText(entryEdit.getText());
-                findViewById(R.id.fab_save).setVisibility(View.GONE);
                 findViewById(R.id.fab_edit).setVisibility(View.VISIBLE);
+
                 //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 //        .setAction("Action", null).show();
             }
         });
 
+    }
+
+    //Handle back arrow press as navigation up
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
 }

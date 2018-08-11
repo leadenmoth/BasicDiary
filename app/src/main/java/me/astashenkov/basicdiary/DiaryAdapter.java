@@ -33,12 +33,12 @@ public class DiaryAdapter extends ArrayAdapter<Diary> {
 
         Diary currentDiary = diaryList.get(position);
 
-        TextView name = (TextView) listItem.findViewById(R.id.textView_title);
-        name.setText(currentDiary.getTitle());
+        TextView title = (TextView) listItem.findViewById(R.id.textView_title);
+        title.setText(currentDiary.getTitle());
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd\nHH:mm:ss");
-        TextView release = (TextView) listItem.findViewById(R.id.textView_date);
-        release.setText(df.format(currentDiary.getDateCreated()));
+        TextView date = (TextView) listItem.findViewById(R.id.textView_date);
+        date.setText(currentDiary.getDateCreated());
 
         return listItem;
     }
