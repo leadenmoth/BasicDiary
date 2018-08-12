@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                startActivity(intent);
             }
         });
         //endregion
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Diary diary = (Diary) parent.getAdapter().getItem(position);
-                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+                Intent intent = new Intent(MainActivity.this, BrowseActivity.class);
                 intent.putExtra("diary", diary);
                 startActivity(intent);
             }
@@ -105,49 +105,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        diaryList.clear();
+        diaryList.addAll(db.getAllDiaries());
+        adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void finish() {
         super.finish();
         db.close();
     }
 
-/*
-    class GeneralAdapter extends CursorAdapter {
 
-        GeneralAdapter(Cursor c) {
-            super(MainActivity.this, c);
-        }
-
-        @Override
-        public void bindView(View view, Context context, Cursor cursor) {
-            ViewHolder holder = (ViewHolder) view.getTag();
-            holder.populateFrom(cursor, db);
-        }
-
-        @Override
-        public View newView(Context context, Cursor cursor, ViewGroup parent) {
-            LayoutInflater inflater = getLayoutInflater();
-            View row = inflater.inflate(R.layout.list_item, parent, false);
-            ViewHolder holder = new ViewHolder(row);
-            row.setTag(holder);
-
-            return (row);
-        }
-    }
-
-    static class ViewHolder {
-        private TextView title = null;
-        private TextView description = null;
-
-        ViewHolder(View row) {
-            title = (TextView) row.findViewById(R.id.textView_title);
-            description = (TextView) row.findViewById(R.id.textView_date);
-        }
-
-        public void populateFrom(Cursor c, DatabaseAdapter database) {
-            title.setText(c.getString(1));
-            description.setText(c.getString(2));
-        }
-    }
-*/
 
 }

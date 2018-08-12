@@ -1,5 +1,7 @@
 package me.astashenkov.basicdiary;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class EditActivity extends AppCompatActivity {
+    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +26,7 @@ public class EditActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //endregion
 
-        final TextView titleView = (TextView) findViewById(R.id.title_view);
-        final TextView entryView = (TextView) findViewById(R.id.entry_view);
+        db = new DatabaseHelper(this);
         final EditText titleEdit = (EditText) findViewById(R.id.title_edit);
         final EditText entryEdit = (EditText) findViewById(R.id.entry_edit);
 
@@ -33,30 +35,14 @@ public class EditActivity extends AppCompatActivity {
         final Diary diary;
         if(extras != null){
             diary = (Diary) extras.getSerializable("diary");
-
+            getSupportActionBar().setTitle("Edit diary");
         }else{
-            diary = new Diary(0, null, "", "", null);
+            diary = new Diary(-1, "", "", null, null);
+            getSupportActionBar().setTitle("New diary");
         }
 
-        titleView.setText(diary.getTitle());
-        entryView.setText(diary.getDescription());
         titleEdit.setText(diary.getTitle());
         entryEdit.setText(diary.getDescription());
-
-        FloatingActionButton fabEdit = (FloatingActionButton) findViewById(R.id.fab_edit);
-        fabEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                titleView.setVisibility(View.GONE);
-                entryView.setVisibility(View.GONE);
-                titleEdit.setVisibility(View.VISIBLE);
-                entryEdit.setVisibility(View.VISIBLE);
-                findViewById(R.id.fab_edit).setVisibility(View.GONE);
-                findViewById(R.id.fab_save).setVisibility(View.VISIBLE);
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
-            }
-        });
 
         FloatingActionButton fabSave = (FloatingActionButton) findViewById(R.id.fab_save);
         fabSave.setOnClickListener(new View.OnClickListener() {
@@ -64,19 +50,19 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 diary.setTitle(titleEdit.getText().toString());
                 diary.setDescription(entryEdit.getText().toString());
-                titleView.setText(diary.getTitle());
-                entryView.setText(diary.getDescription());
+                if (diary.getId() == -1) {
+                    db.insertDiary(diary);
+                } else {
+                    db.updateDiary(diary);
+                }
 
-                titleEdit.setVisibility(View.GONE);
-                entryEdit.setVisibility(View.GONE);
-                findViewById(R.id.fab_save).setVisibility(View.GONE);
+                Snackbar.make(view, "Diary saved", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
 
-                titleView.setVisibility(View.VISIBLE);
-                entryView.setVisibility(View.VISIBLE);
-                findViewById(R.id.fab_edit).setVisibility(View.VISIBLE);
-
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("diary",diary);
+                setResult(Activity.RESULT_OK,returnIntent);
+                finish();
             }
         });
 

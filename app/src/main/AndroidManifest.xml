@@ -20,9 +20,13 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".BrowseActivity"
+            android:label="@string/title_activity_browse"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".EditActivity"
             android:label="@string/title_activity_edit"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
