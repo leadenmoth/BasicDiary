@@ -5,4 +5,7 @@
     <string name="action_sort">Sort</string>
     <string name="title_activity_browse">Browse Activity</string>
     <string name="title_activity_edit">Edit Activity</string>
+    <string name="pref_sortType">Default sorting</string>
+    <string name="pref_sortType_default">Created</string>
+    <string name="title_activity_settings">Settings</string>
 </resources>

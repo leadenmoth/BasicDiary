@@ -3,13 +3,18 @@ package me.astashenkov.basicdiary;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
@@ -33,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Diary> diaryList = new ArrayList<>();
     private DiaryAdapter adapter;
     private DatabaseHelper db;
-    private String sortColumn = Diary.TITLE;
+    private String sortColumn;
 
     Diary[] diaryPlaceholders = new Diary[]{
             new Diary(1, "Example entry 1", "Lorum ipsum", null, null),
@@ -44,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        sortColumn = sharedPref.getString("pref_sort", "");
 
         //region Toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -82,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        registerForContextMenu(listView);
         //endregion
     }
 
@@ -102,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_sort) {
             showSortPopup(findViewById(id));
@@ -143,9 +154,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+        menu.add(0, v.getId(), 0, "Delete");
+    }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        if (item.getTitle() == "Delete") {
+            db.deleteDiary(diaryList.get(info.position));
+            diaryList.clear();
+            diaryList.addAll(db.getAllDiaries(sortColumn));
+            adapter.notifyDataSetChanged();
+        } else { return false; }
+        return true;
+    }
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
+            if (resultCode == Activity.RESULT_OK) {
                 Bundle extras = intent.getExtras();
                 final Diary diary;
                 if(extras != null){
@@ -162,8 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 diaryList.clear();
                 diaryList.addAll(db.getAllDiaries(sortColumn));
                 adapter.notifyDataSetChanged();
-                ListView listView = (ListView) findViewById(R.id.diary_list);
-                Snackbar.make(listView, "Diary saved", Snackbar.LENGTH_LONG)
+                Snackbar.make((ListView) findViewById(R.id.diary_list), "Diary saved", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         }
@@ -182,7 +209,4 @@ public class MainActivity extends AppCompatActivity {
         super.finish();
         db.close();
     }
-
-
-
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="pref_sortTypes_entries">
+        <item>By title</item>
+        <item>By time created</item>
+        <item>By time modified</item>
+    </array>
+    <array name="pref_sortTypes_values">
+        <item>Title</item>
+        <item>Created</item>
+        <item>Modified</item>
+    </array>
+
+</resources>
