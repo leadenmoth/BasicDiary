@@ -15,6 +15,9 @@ import android.widget.TextView;
 
 public class BrowseActivity extends AppCompatActivity {
 
+    private DatabaseHelper db;
+    private Diary diary;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +30,9 @@ public class BrowseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //endregion
 
-        final Diary diary = BrowseAdapter(getIntent());
+        db = new DatabaseHelper(this);
+
+        diary = BrowseAdapter(getIntent());
 
         FloatingActionButton fabEdit = (FloatingActionButton) findViewById(R.id.fab_edit);
         fabEdit.setOnClickListener(new View.OnClickListener() {
@@ -35,7 +40,7 @@ public class BrowseActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(BrowseActivity.this, EditActivity.class);
                 intent.putExtra("diary", diary);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, 2);
             }
         });
     }
@@ -49,9 +54,12 @@ public class BrowseActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
+        if (requestCode == 2) {
             if(resultCode == Activity.RESULT_OK){
                 BrowseAdapter(data);
+                final TextView entryView = (TextView) findViewById(R.id.entry_view);
+                Snackbar.make(entryView, "Diary saved", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         }
     }
@@ -61,11 +69,16 @@ public class BrowseActivity extends AppCompatActivity {
         final TextView entryView = (TextView) findViewById(R.id.entry_view);
 
         Bundle extras = intent.getExtras();
-        final Diary diary;
         if(extras != null){
             diary = (Diary) extras.getSerializable("diary");
         }else{
             diary = new Diary(-1, "", "", null, null);
+        }
+
+        if (diary.getId() == -1) {
+            db.insertDiary(diary);
+        } else {
+            db.updateDiary(diary);
         }
 
         getSupportActionBar().setTitle(diary.getTitle());
@@ -93,7 +106,8 @@ public class BrowseActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
-            return true;
+            db.deleteDiary(diary);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);

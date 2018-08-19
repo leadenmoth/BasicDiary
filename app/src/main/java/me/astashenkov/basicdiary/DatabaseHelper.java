@@ -6,7 +6,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -69,13 +71,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return diary;
     }
 
-    public ArrayList<Diary> getAllDiaries() {
+    public ArrayList<Diary> getAllDiaries(String sortColumn) {
         ArrayList<Diary> diaries = new ArrayList<>();
 
         // Select All Query
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(Diary.DIARY, null, null, null, null, null, null);
+        Cursor cursor = db.query(Diary.DIARY, null, null, null, null, null, sortColumn);
 
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
@@ -112,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(Diary.TITLE, diary.getTitle());
         values.put(Diary.DESCRIPTION, diary.getDescription());
-        //values.put(Diary.MODIFIED, new Timestamp(System.currentTimeMillis()));
+        values.put(Diary.MODIFIED, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
         int id = db.update(Diary.DIARY, values, Diary.ID + "=?",
                 new String[]{String.valueOf(diary.getId())});
         db.close();

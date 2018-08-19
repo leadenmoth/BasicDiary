@@ -1,5 +1,6 @@
 package me.astashenkov.basicdiary;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<Diary> diaryList = new ArrayList<>();
     private DiaryAdapter adapter;
     private DatabaseHelper db;
+    private String sortColumn = Diary.TITLE;
 
     Diary[] diaryPlaceholders = new Diary[]{
             new Diary(1, "Example entry 1", "Lorum ipsum", null, null),
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
         //endregion
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             db.setupDiary(diaryPlaceholders);
         }
 
-        diaryList.addAll(db.getAllDiaries());
+        diaryList.addAll(db.getAllDiaries(sortColumn));
         adapter = new DiaryAdapter(this, diaryList);
         ListView listView = (ListView) findViewById(R.id.diary_list);
         listView.setAdapter(adapter);
@@ -101,16 +104,76 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_sort) {
+            showSortPopup(findViewById(id));
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showSortPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        // Inflate the menu from xml
+        popup.inflate(R.menu.menu_sort);
+        // Setup menu item selection
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.menu_sort_title:
+                        sortColumn = Diary.TITLE;
+                        break;
+                    case R.id.menu_sort_created:
+                        sortColumn = Diary.CREATED;
+                        break;
+                    case R.id.menu_sort_modified:
+                        sortColumn = Diary.MODIFIED;
+                        break;
+                    default:
+                        break;
+                }
+                diaryList.clear();
+                diaryList.addAll(db.getAllDiaries(sortColumn));
+                adapter.notifyDataSetChanged();
+                return true;
+
+            }
+        });
+        // Handle dismissal with: popup.setOnDismissListener(...);
+        // Show the menu
+        popup.show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                Bundle extras = intent.getExtras();
+                final Diary diary;
+                if(extras != null){
+                    diary = (Diary) extras.getSerializable("diary");
+                }else{
+                    diary = new Diary(-1, "", "", null, null);
+                }
+
+                if (diary.getId() == -1) {
+                    db.insertDiary(diary);
+                } else {
+                    db.updateDiary(diary);
+                }
+                diaryList.clear();
+                diaryList.addAll(db.getAllDiaries(sortColumn));
+                adapter.notifyDataSetChanged();
+                ListView listView = (ListView) findViewById(R.id.diary_list);
+                Snackbar.make(listView, "Diary saved", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         diaryList.clear();
-        diaryList.addAll(db.getAllDiaries());
+        diaryList.addAll(db.getAllDiaries(sortColumn));
         adapter.notifyDataSetChanged();
     }
 

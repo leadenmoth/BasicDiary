@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class EditActivity extends AppCompatActivity {
-    private DatabaseHelper db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +25,8 @@ public class EditActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         //endregion
 
-        db = new DatabaseHelper(this);
         final EditText titleEdit = (EditText) findViewById(R.id.title_edit);
         final EditText entryEdit = (EditText) findViewById(R.id.entry_edit);
-
 
         Bundle extras = getIntent().getExtras();
         final Diary diary;
@@ -50,14 +47,6 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 diary.setTitle(titleEdit.getText().toString());
                 diary.setDescription(entryEdit.getText().toString());
-                if (diary.getId() == -1) {
-                    db.insertDiary(diary);
-                } else {
-                    db.updateDiary(diary);
-                }
-
-                Snackbar.make(view, "Diary saved", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra("diary",diary);
