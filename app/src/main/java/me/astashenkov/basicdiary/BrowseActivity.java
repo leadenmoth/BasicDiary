@@ -7,16 +7,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
 public class BrowseActivity extends AppCompatActivity {
 
     private DatabaseHelper db;
     private Diary diary;
+    private TextView entryView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,10 @@ public class BrowseActivity extends AppCompatActivity {
                 startActivityForResult(intent, 2);
             }
         });
+
+        Snackbar.make(entryView, "Diary created on " + diary.getDateCreated()
+                + "\nDiary modified on " + diary.getDateModified(), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 
     //Handle back arrow press as navigation up
@@ -57,7 +62,7 @@ public class BrowseActivity extends AppCompatActivity {
         if (requestCode == 2) {
             if(resultCode == Activity.RESULT_OK){
                 BrowseAdapter(data);
-                final TextView entryView = (TextView) findViewById(R.id.entry_view);
+                entryView = (TextView) findViewById(R.id.entry_view);
                 Snackbar.make(entryView, "Diary saved", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
@@ -66,7 +71,8 @@ public class BrowseActivity extends AppCompatActivity {
 
     protected Diary BrowseAdapter(Intent intent) {
 
-        final TextView entryView = (TextView) findViewById(R.id.entry_view);
+        entryView = (TextView) findViewById(R.id.entry_view);
+        entryView.setMovementMethod(new ScrollingMovementMethod());
 
         Bundle extras = intent.getExtras();
         if(extras != null){

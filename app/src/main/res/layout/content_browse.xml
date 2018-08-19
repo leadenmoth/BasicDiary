@@ -12,6 +12,9 @@
         android:id="@+id/entry_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"/>
+        android:layout_margin="10dp"
+        android:scrollbars="vertical"
+        android:textSize="16dp"
+        android:textStyle="bold" />
 
 </android.support.constraint.ConstraintLayout>

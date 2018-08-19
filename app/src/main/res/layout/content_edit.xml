@@ -12,12 +12,14 @@
         android:id="@+id/title_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:hint="Your title"/>
     <EditText
         android:id="@+id/entry_edit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
+        android:hint="Your text"
         app:layout_constraintTop_toBottomOf="@+id/title_edit"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -38,7 +38,7 @@ public class DiaryAdapter extends ArrayAdapter<Diary> {
 
         TextView text = (TextView) listItem.findViewById(R.id.textView_text);
         String description = currentDiary.getDescription();
-        if (description.length() > 15) description = description.substring(0, 15) + "...";
+        if (description.length() > 20) description = description.substring(0, 20) + "...";
         text.setText(description);
 
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd\nHH:mm:ss");

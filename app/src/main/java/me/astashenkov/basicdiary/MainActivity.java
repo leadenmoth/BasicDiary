@@ -1,12 +1,9 @@
 package me.astashenkov.basicdiary;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,23 +12,12 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,9 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private String sortColumn;
 
     Diary[] diaryPlaceholders = new Diary[]{
-            new Diary(1, "Example entry 1", "Lorum ipsum", null, null),
-            new Diary(2, "Example entry 2", "Lorum ipsum", null, null),
-            new Diary(3, "Example entry 3", "Lorum ipsum", null, null)};
+            new Diary(1, "Getting Started", "Tap to view diary  \nTap the button below to edit current entry\nTap the bin above to delete entry", null, null),
+            new Diary(2, "Create a new entry", "...by tapping (+)", null, null),
+            new Diary(3, "Press and hold to delete", "Tap above to sort", null, null)};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-public class DatabaseAdapter {
+public class DatabaseAdapter {/*
     private SQLiteDatabase db;
     private Context context;
     private BaseDBOpenHelper dbHelper;
@@ -137,4 +137,4 @@ public class DatabaseAdapter {
             onCreate(_db);
         }
     }
-}
+*/}

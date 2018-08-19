@@ -1,7 +1,6 @@
 package me.astashenkov.basicdiary;
 
 import java.io.Serializable;
-import java.util.Date;
 
 public class Diary implements Serializable {
     public static final String DIARY = "Diary";
